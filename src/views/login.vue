@@ -6,7 +6,7 @@
       :rules="rules"
       ref="loginForm"
     >
-    <img src="../assets/avatar.jpg" alt="" class="avatar">
+    <img src="../assets/img1.png" alt="" class="avatar">
       <el-form-item prop="username">
         <el-input v-model="loginForm.username" placeholder="请输入用户名">
             <i slot="prefix" class="myicon myicon-user"></i>
@@ -61,7 +61,7 @@ export default {
                 // 在成功登录状态下跳转页面
                 this.$router.push({ name: 'home' })
               } else {
-                this.$message.error('服务异常')
+                this.$message.error(res.data.meta.msg)
               }
             })
             .catch(err => {
@@ -84,7 +84,7 @@ export default {
   position: fixed;
   width: 100%;
   height: 100%;
-  background-color: #2f4050;
+  background :url('../assets/img2.png')
 }
 .container {
   position: absolute;
@@ -92,7 +92,7 @@ export default {
   right: 0;
   width: 400px;
   margin: 200px auto;
-  background-color: #fff;
+  background-color: rgba(0, 0, 0, .1);
   padding: 0px 40px 15px 40px
 }
 .avatar {
