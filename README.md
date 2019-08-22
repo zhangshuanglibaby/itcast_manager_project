@@ -1,29 +1,79 @@
 # itcast_manager_project
 
-## Project setup
-```
-npm install
-```
+#### 使用vue-cli创建项目
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+#### 使用element-ui框架
 
-### Compiles and minifies for production
-```
-npm run build
-```
+- 1.下载
+- 2.在main.js引入
 
-### Run your tests
-```
-npm run test
-```
 
-### Lints and fixes files
-```
-npm run lint
-```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 登录
+
+#### 实现界面效果
+
+##### 创建当文件组件
+
+- 添加一个存放用户组件的文件夹 ：views
+- 添加登录单文件组件 ：@/views/ login.vue
+
+##### 下载引入路由
+
+- 添加一个存放路由的文件夹 ： router
+- 添加封装路由的文件 ： @/router/router.js
+
+##### 进行路由的配置
+
+##### 使用element-ui的组件引入适合的表单
+
+- 1.写入登录页面样式‘
+- 2.对引入的代码进行筛选整理
+- 3.寻找输入框加入图标的方法
+- 3.要对当前登录的提交进行2次验证,如果不正确会弹框
+
+
+
+#### 实现功能
+
+##### 在填写无误时,发送请求验证账号
+
+- 1.封装axios  ---@/utils/myaxios.js
+
+- 2.添加一个存放api(验证接口方法)的文件夹 ： api
+
+- 增加登录验证的发送请求文件 : @/api/login.js
+
+   1.在此文件引入axios
+
+  2.添加登录验证的方法--要记得return axio
+
+- 在login.vue引用login.js请求方法
+
+  1.要在数据库添加数据
+
+  2.要开启服务器
+
+  3.在成功登录的状态下,跳转到主页
+
+  4.在登录成功的状态下,设置状态模式
+
+- 添加主页单文件组件 ： @/views/home.vue
+
+##### 设置导航守卫
+
+1.登录页面不需要返回登录页面
+
+2.已经登录的状态也不需要返回登录页面
+
+##### 设置主页面结构
+
+- 在element-ui找到合适的布局复制结构
+- 在element-ui找到合适的菜单栏
+
+
+### 
+
+
+### 
+
