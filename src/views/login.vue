@@ -60,6 +60,8 @@ export default {
                 localStorage.setItem('itcast_manger', res.data.data.token)
                 // 在成功登录状态下跳转页面
                 this.$router.push({ name: 'home' })
+              } else {
+                this.$message.error('服务异常')
               }
             })
             .catch(err => {
