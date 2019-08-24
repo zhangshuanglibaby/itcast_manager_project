@@ -9,7 +9,7 @@
           default-active="2"
           class="el-menu-vertical-demo"
           text-color="#0e141a"
-          active-text-color="#ffd04b"
+          active-text-color="#6d96be"
         >
           <el-submenu index="1">
             <template slot="title">
@@ -83,7 +83,7 @@ export default {
 <style lang="less" scoped>
 .home {
   height: 100%;
- background-color: #fff;
+ background-color:rgb(235, 235, 235);
   .el-menu-admin:not(.el-menu--collapse) {
     width: 200px;
     min-height: 400px;
@@ -92,18 +92,18 @@ export default {
     height: 100%;
   }
   .el-aside {
-    background-color: #fff;
+    background-color:#fff;
     border-right: 1px solid #eee;
   }
   .el-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #fff;
+    background-color:rgb(214, 235, 238);
     border-bottom: 1px solid #eee;
     p {
       font-size: 36px;
-      color: #0e141a
+      color: #4d5053
     }
     a {
       color: orange;

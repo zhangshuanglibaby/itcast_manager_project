@@ -8,7 +8,12 @@
     </el-breadcrumb>
     <!-- 搜索和添加 -->
     <div style="margin-top: 15px;">
-      <el-input placeholder="请输入搜索内容" v-model="usersObj.query" style="width : 300px" @input.native="init()">
+      <el-input
+        placeholder="请输入搜索内容"
+        v-model="usersObj.query"
+        style="width : 300px"
+        @input.native="init()"
+      >
         <el-button slot="append" icon="el-icon-search" @click="init"></el-button>
       </el-input>
       <el-button type="success" plain style="margin-left:10px">添加用户</el-button>
@@ -20,42 +25,25 @@
       <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
       <el-table-column prop="mobile" label="电话"></el-table-column>
       <!-- 用户状态 -->
-      <template>
-        <el-table-column prop="mg_state" label="用户状态">
-          <el-switch active-color="#13ce66" inactive-color="#d7dce5" v-model="status"></el-switch>
-        </el-table-column>
-      </template>
+      <el-table-column label="用户状态">
+        <template slot-scope="scope">
+          <el-switch active-color="#13ce66" inactive-color="#d7dce5" v-model="scope.row.mg_state"></el-switch>
+        </template>
+      </el-table-column>
       <!-- 操作 -->
-      <template>
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              plain
-              type="primary"
-              @click="handleEdit(scope.$index, scope.row)"
-            >
-              <i class="el-icon-edit"></i>
-            </el-button>
-            <el-button
-              size="mini"
-              plain
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
-            >
-              <i class="el-icon-delete"></i>
-            </el-button>
-            <el-button
-              size="mini"
-              plain
-              type="warning"
-              @click="handleCheck(scope.$index, scope.row)"
-            >
-              <i class="el-icon-check"></i>
-            </el-button>
-          </template>
-        </el-table-column>
-      </template>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button size="mini" plain type="primary" @click="handleEdit(scope.$index, scope.row)">
+            <i class="el-icon-edit"></i>
+          </el-button>
+          <el-button size="mini" plain type="danger" @click="handleDelete(scope.$index, scope.row)">
+            <i class="el-icon-delete"></i>
+          </el-button>
+          <el-button size="mini" plain type="warning" @click="handleCheck(scope.$index, scope.row)">
+            <i class="el-icon-check"></i>
+          </el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <!-- 分页 -->
     <el-pagination
@@ -75,7 +63,7 @@ export default {
   data () {
     return {
       total: 0,
-      status: true,
+      // status: true,
       usersList: [],
       usersObj: {
         query: '',

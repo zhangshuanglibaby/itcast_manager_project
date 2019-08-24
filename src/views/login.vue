@@ -65,7 +65,7 @@ export default {
               }
             })
             .catch(err => {
-              console.log(err)
+              this.$message.error('服务器异常,请稍后重试')
             })
         } else {
           this.$message({
