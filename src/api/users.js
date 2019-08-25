@@ -36,3 +36,11 @@ export const grantRole = (data) => {
     data
   })
 }
+
+// 修改用户状态
+export const changeUserStatus = (uId, type) => {
+  return axios({
+    url: `users/${uId}/state/${type}`,
+    method: 'put'
+  })
+}

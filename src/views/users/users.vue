@@ -32,7 +32,7 @@
       <!-- 用户状区域 -->
       <el-table-column label="用户状态">
         <template slot-scope="scope">
-          <el-switch active-color="#13ce66" inactive-color="#d7dce5" v-model="scope.row.mg_state"></el-switch>
+          <el-switch active-color="#13ce66" inactive-color="#d7dce5" v-model="scope.row.mg_state" @change="userStatus(scope.row.id,scope.row.mg_state)"></el-switch>
         </template>
       </el-table-column>
       <!-- 操作区域 -->
@@ -125,7 +125,7 @@
   </div>
 </template>
 <script>
-import { getAllUsers, addUser, editUser, grantRole } from '@/api/users.js'
+import { getAllUsers, addUser, editUser, grantRole, changeUserStatus } from '@/api/users.js'
 import { getAllRoles } from '@/api/roles.js'
 export default {
   data () {
@@ -302,6 +302,23 @@ export default {
       } else {
         this.$message.error('请选择角色名')
       }
+    },
+    // 修改用户状态
+    userStatus (id, type) {
+      changeUserStatus(id, type)
+        .then(res => {
+          // console.log(res)
+          if (res.data.meta.status === 200) {
+            this.$message.success(res.data.meta.msg)
+            // 刷新
+            this.init()
+          } else {
+            this.$message.error(res.data.meta.msg)
+          }
+        })
+        .catch(() => {
+          this.$message.error('修改用户状态失败')
+        })
     }
   },
   // 使用mounted钩子函数,在组件加载完毕时就获取数据
