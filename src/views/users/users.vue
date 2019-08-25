@@ -32,7 +32,12 @@
       <!-- 用户状区域 -->
       <el-table-column label="用户状态">
         <template slot-scope="scope">
-          <el-switch active-color="#13ce66" inactive-color="#d7dce5" v-model="scope.row.mg_state" @change="userStatus(scope.row.id,scope.row.mg_state)"></el-switch>
+          <el-switch
+            active-color="#13ce66"
+            inactive-color="#d7dce5"
+            v-model="scope.row.mg_state"
+            @change="userStatus(scope.row.id,scope.row.mg_state)"
+          ></el-switch>
         </template>
       </el-table-column>
       <!-- 操作区域 -->
@@ -41,7 +46,7 @@
           <el-button size="mini" plain type="primary" @click="showEditUserInfo(scope.row)">
             <i class="el-icon-edit"></i>
           </el-button>
-          <el-button size="mini" plain type="danger" @click="handleDelete(scope.$index, scope.row)">
+          <el-button size="mini" plain type="danger" @click="delUser(scope.row)">
             <i class="el-icon-delete"></i>
           </el-button>
           <el-button size="mini" plain type="warning" @click="showGrantRole(scope.row)">
@@ -111,7 +116,6 @@
         <el-button type="primary" @click="grantRole">确 定</el-button>
       </div>
     </el-dialog>
-
     <!-- 分页区域 -->
     <el-pagination
       @size-change="handleSizeChange"
@@ -125,11 +129,20 @@
   </div>
 </template>
 <script>
-import { getAllUsers, addUser, editUser, grantRole, changeUserStatus } from '@/api/users.js'
+import {
+  getAllUsers,
+  addUser,
+  editUser,
+  grantRole,
+  changeUserStatus,
+  delUserById
+} from '@/api/users.js'
 import { getAllRoles } from '@/api/roles.js'
 export default {
   data () {
     return {
+      userCount: '',
+      userPage: '',
       total: 0,
       // status: true,
       usersList: [],
@@ -185,9 +198,6 @@ export default {
     }
   },
   methods: {
-    handleDelete (index, row) {
-      console.log(index, row)
-    },
     handleSizeChange (val) {
       // 当每页显示数量改变就会触发
       this.usersObj.pagesize = val
@@ -204,10 +214,13 @@ export default {
     init () {
       getAllUsers(this.usersObj)
         .then(res => {
+          console.log(res)
           if (res.data.meta.status === 200) {
             // console.log(res)
             this.usersList = res.data.data.users
             this.total = res.data.data.total
+            this.userCount = res.data.data.users.length
+            this.userPage = res.data.data.pagenum
           } else if (res.data.meta.status === 400) {
             this.$message.error(res.data.meta.msg)
           }
@@ -319,6 +332,41 @@ export default {
         .catch(() => {
           this.$message.error('修改用户状态失败')
         })
+    },
+    // 删除用户
+    delUser (row) {
+      console.log(row)
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '删除提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          // 发送请求
+          delUserById(row.id)
+            .then(res => {
+              if (res.data.meta.status === 200) {
+                this.$message.success(res.data.meta.msg)
+                console.log(res)
+                // 刷新
+                this.init()
+                console.log(this.userCount)
+                console.log(this.userPage)
+                if (this.userCount === 1) {
+                  this.usersObj.pagenum = this.userPage - 1
+                  this.init()
+                }
+              } else {
+                this.$message.error(res.data.meta.msg)
+              }
+            })
+            .catch(() => {
+              this.$message.error('删除用户失败')
+            })
+        })
+        .catch(() => {
+          this.$message.info('已取消删除')
+        })
     }
   },
   // 使用mounted钩子函数,在组件加载完毕时就获取数据
@@ -327,7 +375,7 @@ export default {
     // 一开始就加载完毕就获取角色列表数据
     getAllRoles()
       .then(res => {
-        // console.log(res)
+        console.log(res)
         if (res.data.meta.status === 200) {
           this.rolesList = res.data.data
         } else {
