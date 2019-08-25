@@ -99,11 +99,11 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color:rgb(214, 235, 238);
+    background-color:rgb(106, 213, 230);
     border-bottom: 1px solid #eee;
     p {
       font-size: 36px;
-      color: #4d5053
+      color: #fff
     }
     a {
       color: orange;

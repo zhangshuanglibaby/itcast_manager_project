@@ -219,8 +219,10 @@ export default {
             // console.log(res)
             this.usersList = res.data.data.users
             this.total = res.data.data.total
-            this.userCount = res.data.data.users.length
-            this.userPage = res.data.data.pagenum
+            if (res.data.data.users.length === 1) {
+              res.data.data.pagenum--
+            }
+            this.usersObj.pagenum = res.data.data.pagenum
           } else if (res.data.meta.status === 400) {
             this.$message.error(res.data.meta.msg)
           }
@@ -347,15 +349,9 @@ export default {
             .then(res => {
               if (res.data.meta.status === 200) {
                 this.$message.success(res.data.meta.msg)
-                console.log(res)
+                // console.log(res)
                 // 刷新
                 this.init()
-                console.log(this.userCount)
-                console.log(this.userPage)
-                if (this.userCount === 1) {
-                  this.usersObj.pagenum = this.userPage - 1
-                  this.init()
-                }
               } else {
                 this.$message.error(res.data.meta.msg)
               }
