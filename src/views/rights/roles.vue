@@ -7,14 +7,18 @@
       <el-breadcrumb-item>角色列表</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 添加角色按钮 -->
-    <el-button type="primary" style="margin-bottom:10px" @click="showAddRoleDialog=addRoleDialogFormVisible=true">添加角色</el-button>
+    <el-button
+      type="primary"
+      style="margin-bottom:10px"
+      @click="showAddRoleDialog=addRoleDialogFormVisible=true"
+    >添加角色</el-button>
     <!-- 添加角色对话框 -->
     <el-dialog title="添加角色" :visible.sync="addRoleDialogFormVisible">
       <el-form :model="addRoleform" :label-width="'80px'">
-        <el-form-item label="角色名称" >
+        <el-form-item label="角色名称">
           <el-input v-model="addRoleform.roleName" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="角色描述" >
+        <el-form-item label="角色描述">
           <el-input v-model="addRoleform.roleDesc" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
@@ -71,7 +75,7 @@
       <el-table-column prop="roleDesc" label="描述" width="350"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">
+          <el-button size="mini" type="primary" @click="grantRoleRightDialogVisible=true">
             <i class="el-icon-edit"></i>
           </el-button>
           <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">
@@ -83,10 +87,26 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 添加角色授权对话框 -->
+    <el-dialog title="角色授权" :visible.sync="grantRoleRightDialogVisible" width="30%">
+      <el-tree
+        :data="rightsList"
+        show-checkbox
+        node-key="id"
+        :default-expand-all = true
+        :props="defaultProps"
+      ></el-tree>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="grantRoleRightDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { getAllRoles, delRoleRightbyId, addRole } from '@/api/roles.js'
+import { getAllrights } from '@/api/rights.js'
 export default {
   data () {
     return {
@@ -95,6 +115,12 @@ export default {
       addRoleform: {
         roleName: '',
         roleDesc: ''
+      },
+      grantRoleRightDialogVisible: false,
+      rightsList: [],
+      defaultProps: {
+        label: 'authName',
+        children: 'children'
       }
     }
   },
@@ -112,6 +138,7 @@ export default {
           // console.log(res)
           if (res.data.meta.status === 200) {
             this.rolesList = res.data.data
+            // console.log(this.rolesList)
           } else {
             this.$message.error(res.data.meta.msg)
           }
@@ -159,6 +186,20 @@ export default {
   mounted () {
     // 获取所有角色
     this.init()
+    // 获取所有权限
+    getAllrights('tree')
+      .then(res => {
+        console.log(res)
+        if (res.data.meta.status === 200) {
+          this.rightsList = res.data.data
+          console.log(this.rightsList)
+        } else {
+          this.$message.error(res.data.meta.msg)
+        }
+      })
+      .catch(() => {
+        this.$message.error('服务器异常')
+      })
   }
 }
 </script>
