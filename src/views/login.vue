@@ -64,7 +64,7 @@ export default {
                 this.$message.error(res.data.meta.msg)
               }
             })
-            .catch(err => {
+            .catch(() => {
               this.$message.error('服务器异常,请稍后重试')
             })
         } else {
