@@ -1,13 +1,83 @@
 <template>
-   <div class="roles">
-     这是角色列表
-     </div>
+  <div class="roles">
+    <!-- 面包屑 -->
+    <el-breadcrumb separator="/">
+      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>权限管理</el-breadcrumb-item>
+      <el-breadcrumb-item>角色列表</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!-- 添加角色按钮 -->
+    <el-button type="primary" style="margin-bottom:10px">添加角色</el-button>
+    <!-- 添加角色对话框 -->
+    <!-- 角色表格 -->
+    <el-table :data="rolesList" border style="width: 100%">
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-row v-for="val1 in props.row.children" :key="val1.id" style="margin-bottom:15px;border-bottom:1px solid #eee">
+            <el-col :span="4"><el-tag closable type="success">{{val1.authName}}</el-tag></el-col>
+            <el-col :span="20">
+              <el-row v-for='val2 in val1.children' :key='val2.id' style="margin-bottom:10px">
+                <el-col :span="4"><el-tag closable type="info">{{val2.authName}}</el-tag></el-col>
+                <el-col :span="20"><el-tag closable v-for="val3 in val2.children" :key='val3.id' type="warning" style="margin-right:8px;margin-bottom:5px">{{val3.authName}}</el-tag></el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+          <el-row v-show="props.row.children.length === 0">
+            <el-col :span="24">该角色还没有分配权限呢！！！</el-col>
+          </el-row>
+        </template>
+      </el-table-column>
+      <el-table-column type="index" width="70" label="序号" align="center"></el-table-column>
+      <el-table-column prop="roleName" label="角色名称" width="350"></el-table-column>
+      <el-table-column prop="roleDesc" label="描述" width="350"></el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">
+            <i class="el-icon-edit"></i>
+          </el-button>
+          <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">
+            <i class="el-icon-setting"></i>
+          </el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">
+            <i class="el-icon-delete"></i>
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+  </div>
 </template>
 <script>
+import { getAllRoles } from '@/api/roles.js'
 export default {
-
+  data () {
+    return {
+      rolesList: []
+    }
+  },
+  methods: {
+    handleEdit (index, row) {
+      console.log(index, row)
+    },
+    handleDelete (index, row) {
+      console.log(index, row)
+    }
+  },
+  mounted () {
+    // 获取所有角色
+    getAllRoles()
+      .then(res => {
+        console.log(res)
+        if (res.data.meta.status === 200) {
+          this.rolesList = res.data.data
+        } else {
+          this.$message.error(res.data.meta.msg)
+        }
+      })
+      .catch(() => {
+        this.$message.error('数据获取失败')
+      })
+  }
 }
 </script>
 <style lang="less" scoped>
-
 </style>
