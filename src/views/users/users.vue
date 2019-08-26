@@ -43,14 +43,11 @@
       <!-- 操作区域 -->
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" plain type="primary" @click="showEditUserInfo(scope.row)">
-            <i class="el-icon-edit"></i>
+          <el-button size="mini" plain type="primary" icon="el-icon-edit" @click="showEditUserInfo(scope.row)">
           </el-button>
-          <el-button size="mini" plain type="danger" @click="delUser(scope.row)">
-            <i class="el-icon-delete"></i>
+          <el-button size="mini" plain type="danger" icon="el-icon-delete" @click="delUser(scope.row)">
           </el-button>
-          <el-button size="mini" plain type="warning" @click="showGrantRole(scope.row)">
-            <i class="el-icon-check"></i>
+          <el-button size="mini" plain type="warning" icon="el-icon-check" @click="showGrantRole(scope.row)">
           </el-button>
         </template>
       </el-table-column>
@@ -214,7 +211,7 @@ export default {
     init () {
       getAllUsers(this.usersObj)
         .then(res => {
-          console.log(res)
+          // console.log(res)
           if (res.data.meta.status === 200) {
             // console.log(res)
             this.usersList = res.data.data.users
@@ -371,7 +368,7 @@ export default {
     // 一开始就加载完毕就获取角色列表数据
     getAllRoles()
       .then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.data.meta.status === 200) {
           this.rolesList = res.data.data
         } else {

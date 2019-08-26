@@ -75,25 +75,23 @@
       <el-table-column prop="roleDesc" label="描述" width="350"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" @click="grantRoleRightDialogVisible=true">
-            <i class="el-icon-edit"></i>
+          <el-button size="mini" type="primary" icon="el-icon-edit" @click="grantRoleRightDialogVisible=true">
           </el-button>
-          <el-button size="mini" type="primary" @click="handleEdit(scope.$index, scope.row)">
-            <i class="el-icon-setting"></i>
+          <el-button size="mini" type="primary" icon="el-icon-setting" @click="handleEdit(scope.$index, scope.row)">
           </el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">
-            <i class="el-icon-delete"></i>
+          <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(scope.$index, scope.row)">
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 添加角色授权对话框 -->
-    <el-dialog title="角色授权" :visible.sync="grantRoleRightDialogVisible" width="30%">
+    <el-dialog title="角色授权" :visible.sync="grantRoleRightDialogVisible" width="40%">
       <el-tree
         :data="rightsList"
         show-checkbox
         node-key="id"
         :default-expand-all = true
+        :default-checked-keys="checkedArr"
         :props="defaultProps"
       ></el-tree>
 
@@ -118,9 +116,11 @@ export default {
       },
       grantRoleRightDialogVisible: false,
       rightsList: [],
+      // 默认选中的节点
+      checkedArr: [],
       defaultProps: {
-        label: 'authName',
-        children: 'children'
+        label: 'authName', // 节点展示的文本属性
+        children: 'children' // 节点的下级数据
       }
     }
   },
@@ -149,9 +149,10 @@ export default {
     },
     // 删除角色指定权限
     delRoleRight (row, rightid) {
+      // console.log(row)
       delRoleRightbyId(row.id, rightid)
         .then(res => {
-          console.log(res)
+          // console.log(res)
           if (res.data.meta.status === 200) {
             this.$message.success(res.data.meta.msg)
             // 需要重置roleList内容达到刷新
@@ -189,10 +190,10 @@ export default {
     // 获取所有权限
     getAllrights('tree')
       .then(res => {
-        console.log(res)
+        // console.log(res)
         if (res.data.meta.status === 200) {
           this.rightsList = res.data.data
-          console.log(this.rightsList)
+          // console.log(this.rightsList)
         } else {
           this.$message.error(res.data.meta.msg)
         }
