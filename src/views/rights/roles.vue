@@ -14,11 +14,11 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-row v-for="val1 in props.row.children" :key="val1.id" style="margin-bottom:15px;border-bottom:1px solid #eee">
-            <el-col :span="4"><el-tag closable type="success">{{val1.authName}}</el-tag></el-col>
+            <el-col :span="4"><el-tag closable type="success" @close='delRoleRight(props.row,val1.id)'>{{val1.authName}}</el-tag></el-col>
             <el-col :span="20">
               <el-row v-for='val2 in val1.children' :key='val2.id' style="margin-bottom:10px">
-                <el-col :span="4"><el-tag closable type="info">{{val2.authName}}</el-tag></el-col>
-                <el-col :span="20"><el-tag closable v-for="val3 in val2.children" :key='val3.id' type="warning" style="margin-right:8px;margin-bottom:5px">{{val3.authName}}</el-tag></el-col>
+                <el-col :span="4"><el-tag closable type="info" @close='delRoleRight(props.row,val2.id)'>{{val2.authName}}</el-tag></el-col>
+                <el-col :span="20"><el-tag closable v-for="val3 in val2.children" :key='val3.id' type="warning" style="margin-right:8px;margin-bottom:5px" @close='delRoleRight(props.row,val3.id)'>{{val3.authName}}</el-tag></el-col>
               </el-row>
             </el-col>
           </el-row>
@@ -47,7 +47,7 @@
   </div>
 </template>
 <script>
-import { getAllRoles } from '@/api/roles.js'
+import { getAllRoles, delRoleRightbyId } from '@/api/roles.js'
 export default {
   data () {
     return {
@@ -60,6 +60,23 @@ export default {
     },
     handleDelete (index, row) {
       console.log(index, row)
+    },
+    // 删除角色指定权限
+    delRoleRight (row, rightid) {
+      delRoleRightbyId(row.id, rightid)
+        .then(res => {
+          console.log(res)
+          if (res.data.meta.status === 200) {
+            this.$message.success(res.data.meta.msg)
+            // 需要重置roleList内容达到刷新
+            row.children = res.data.data
+          } else {
+            this.$message.error(res.data.meta.msg)
+          }
+        })
+        .catch(() => {
+          this.$message.error('删除失败')
+        })
     }
   },
   mounted () {
