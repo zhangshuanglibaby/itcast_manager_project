@@ -90,6 +90,7 @@
         :data="rightsList"
         show-checkbox
         node-key="id"
+        ref='tree'
         :default-expand-all = true
         :default-checked-keys="checkedArr"
         :props="defaultProps"
@@ -97,17 +98,19 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="grantRoleRightDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary"  @click='grantRoleRight(roleId)'>确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
-import { getAllRoles, delRoleRightbyId, addRole } from '@/api/roles.js'
+import { getAllRoles, delRoleRightbyId, addRole, grantRoleRightById } from '@/api/roles.js'
 import { getAllrights } from '@/api/rights.js'
 export default {
   data () {
     return {
+      // 先用一个变量保存需要用到的角色id
+      roleId: '',
       rolesList: [],
       addRoleDialogFormVisible: false,
       addRoleform: {
@@ -186,7 +189,9 @@ export default {
     // 获取角色默认权限
     showGrantdDialog (row) {
       this.grantRoleRightDialogVisible = true
-      // console.log(row)
+      console.log(row)
+      // 这里进行给角色id赋值,后期需要使用
+      this.roleId = row.id
       this.rightsList = [...this.rightsList]
       this.checkedArr.length = 0
       // 获取最下级的权限id,最好先检测
@@ -202,6 +207,51 @@ export default {
           })
         }
       })
+    },
+    // 实现给指定的角色授权
+    async grantRoleRight (roleId) {
+      // 需要获取权限的id,由于展示的权限是基于上一层的,所以需要获取1、2、3共3层的权限id
+      // console.log(this.$refs.tree.getCheckedKeys())
+      // console.log(this.$refs.tree.getCheckedNodes()) //[{id:131,pid:"110,125"},{id:132,pid:"110,125"}]
+      // let arr = this.$refs.tree.getCheckedNodes()
+      // let temp = []
+      // 遍历数组进行拼接
+      // arr.forEach(e => {
+      //   temp.push(e.id + ',' + e.pid)
+      // })
+      // console.log(temp) // ["131,110,125","132,110,125"]
+      // 把temp数组的每个元素独立分开后,又转成数组
+      // temp = temp.join(',').split(',')
+      // console.log(temp) //131,110,125,132,110,125  =>  ["131","110","125","132","110","125"]
+      // 利用数组的去重方法
+      // temp = [...new Set(temp)]
+      // console.log(temp) //["131","110","125","132"]
+      // 传参需要传递temp用join分割的字符串
+      // let res = await grantRoleRightById(roleId, temp.join(','))
+      // console.log(res)
+      // if (res.data.meta.status === 200) {
+      //   this.grantRoleRightDialogVisible = false
+      //   this.$message.success(res.data.meta.msg)
+      //   // 需要刷新
+      //   this.init()
+      // } else {
+      //   this.$message.success(res.data.meta.msg)
+      // }
+
+      /** **************************************** */
+      // 这是另一种方法
+      // console.log(this.$refs.tree.getHalfCheckedKeys())  //获取1，2层的权限id
+      // console.log(this.$refs.tree.getCheckedKeys()) //获取第3层的权限id
+      let arr = [...this.$refs.tree.getHalfCheckedKeys(), ...this.$refs.tree.getCheckedKeys()]
+      let res = await grantRoleRightById(roleId, arr.join(','))
+      // console.log(res)
+      if (res.data.meta.status === 200) {
+        this.grantRoleRightDialogVisible = false
+        this.$message.success(res.data.meta.msg)
+        this.init()
+      } else {
+        this.$message.error(res.data.meta.msg)
+      }
     }
   },
   mounted () {
