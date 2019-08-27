@@ -211,15 +211,11 @@ export default {
     init () {
       getAllUsers(this.usersObj)
         .then(res => {
-          // console.log(res)
+          console.log(res)
           if (res.data.meta.status === 200) {
             // console.log(res)
             this.usersList = res.data.data.users
             this.total = res.data.data.total
-            if (res.data.data.users.length === 1) {
-              res.data.data.pagenum--
-            }
-            this.usersObj.pagenum = res.data.data.pagenum
           } else if (res.data.meta.status === 400) {
             this.$message.error(res.data.meta.msg)
           }
@@ -334,7 +330,7 @@ export default {
     },
     // 删除用户
     delUser (row) {
-      console.log(row)
+      // console.log(row)
       this.$confirm('此操作将永久删除该文件, 是否继续?', '删除提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -347,6 +343,16 @@ export default {
               if (res.data.meta.status === 200) {
                 this.$message.success(res.data.meta.msg)
                 // console.log(res)
+                // console.log(this.usersObj.pagenum)
+                // console.log(this.total)
+                // console.log(this.usersObj.pagesize)
+                if (this.usersList.length === 1) {
+                  this.usersObj.pagenum--
+                }
+                /** 方法二 */
+                // if (Math.ceil((this.total - 1) / this.usersObj.pagesize) < this.usersObj.pagenum) {
+                //   this.usersObj.pagenum--
+                // }
                 // 刷新
                 this.init()
               } else {
