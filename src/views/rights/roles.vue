@@ -75,7 +75,7 @@
       <el-table-column prop="roleDesc" label="描述" width="350"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" icon="el-icon-edit" @click="grantRoleRightDialogVisible=true">
+          <el-button size="mini" type="primary" icon="el-icon-edit" @click="showGrantdDialog(scope.row)">
           </el-button>
           <el-button size="mini" type="primary" icon="el-icon-setting" @click="handleEdit(scope.$index, scope.row)">
           </el-button>
@@ -182,6 +182,26 @@ export default {
         .catch(() => {
           this.$message.error('添加角色失败')
         })
+    },
+    // 获取角色默认权限
+    showGrantdDialog (row) {
+      this.grantRoleRightDialogVisible = true
+      // console.log(row)
+      this.rightsList = [...this.rightsList]
+      this.checkedArr.length = 0
+      // 获取最下级的权限id,最好先检测
+      row.children.forEach(e1 => {
+        if (e1.children.length > 0) {
+          e1.children.forEach(e2 => {
+            if (e2.children.length > 0) {
+              // console.log(e2.children)
+              e2.children.forEach(e3 => {
+                this.checkedArr.push(e3.id)
+              })
+            }
+          })
+        }
+      })
     }
   },
   mounted () {
