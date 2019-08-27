@@ -59,7 +59,7 @@
                     :key="val3.id"
                     type="warning"
                     style="margin-right:8px;margin-bottom:5px"
-                    @close="delRoleRight(props.row,val3.id)"
+                    @close="cnt=0;delRoleRight(props.row,val3.id)"
                   >{{val3.authName}}</el-tag>
                 </el-col>
               </el-row>
@@ -111,6 +111,7 @@ export default {
     return {
       // 先用一个变量保存需要用到的角色id
       roleId: '',
+      cnt: 0,
       rolesList: [],
       addRoleDialogFormVisible: false,
       addRoleform: {
@@ -157,9 +158,24 @@ export default {
         .then(res => {
           // console.log(res)
           if (res.data.meta.status === 200) {
-            this.$message.success(res.data.meta.msg)
+            if (this.cnt === 0) {
+              this.$message.success(res.data.meta.msg)
+              this.cnt++
+            }
             // 需要重置roleList内容达到刷新
             row.children = res.data.data
+            row.children.forEach(e1 => {
+              if (e1.children.length === 0) {
+                this.delRoleRight(row, e1.id)
+              } else {
+                // 继续遍历第二层
+                e1.children.forEach(e2 => {
+                  if (e2.children.length === 0) {
+                    this.delRoleRight(row, e2.id)
+                  }
+                })
+              }
+            })
           } else {
             this.$message.error(res.data.meta.msg)
           }
