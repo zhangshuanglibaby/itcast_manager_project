@@ -11,16 +11,16 @@
           text-color="#0e141a"
           active-text-color="#6d96be"
         >
-          <el-submenu index="1">
+          <el-submenu :index="item.id + ''" v-for="item in menusList" :key='item.id'>
             <template slot="title">
               <i class="el-icon-location"></i>
-              <span>用户管理</span>
+              <span>{{item.authName}}</span>
             </template>
-            <el-menu-item index="/home/users">
-              <i class="el-icon-menu"></i>用户列表
+            <el-menu-item :index="'/home/'+subitem.path" v-for="subitem in item.children" :key='subitem.id'>
+              <i class="el-icon-menu"></i>{{subitem.authName}}
             </el-menu-item>
           </el-submenu>
-          <el-submenu index="2">
+          <!-- <el-submenu index="2">
             <template slot="title">
               <i class="el-icon-location"></i>
               <span>权限管理</span>
@@ -31,34 +31,7 @@
             <el-menu-item index="/home/roles">
               <i class="el-icon-menu"></i>角色列表
             </el-menu-item>
-          </el-submenu>
-          <el-submenu index="3">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>商品管理</span>
-            </template>
-            <el-menu-item index="3-1">
-              <i class="el-icon-menu"></i>选项3
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="4">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>订单管理</span>
-            </template>
-            <el-menu-item index="4-1">
-              <i class="el-icon-menu"></i>选项3
-            </el-menu-item>
-          </el-submenu>
-          <el-submenu index="5">
-            <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>数据统计</span>
-            </template>
-            <el-menu-item index="5-1">
-              <i class="el-icon-menu"></i>选项3
-            </el-menu-item>
-          </el-submenu>
+          </el-submenu> -->
         </el-menu>
       </el-aside>
       <el-container>
@@ -76,8 +49,22 @@
   </div>
 </template>
 <script>
+import { getLeftMenus } from '@/api/rights.js'
 export default {
-
+  data () {
+    return {
+      menusList: []
+    }
+  },
+  mounted () {
+    getLeftMenus()
+      .then(res => {
+        // console.log(res)
+        if (res.data.meta.status === 200) {
+          this.menusList = res.data.data
+        }
+      })
+  }
 }
 </script>
 <style lang="less" scoped>

@@ -14,11 +14,11 @@
     >添加角色</el-button>
     <!-- 添加角色对话框 -->
     <el-dialog title="添加角色" :visible.sync="addRoleDialogFormVisible">
-      <el-form :model="addRoleform" :label-width="'80px'">
-        <el-form-item label="角色名称">
+      <el-form :model="addRoleform" :label-width="'80px'" :rules="rules" ref="addRoleform">
+        <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="addRoleform.roleName" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="角色描述">
+        <el-form-item label="角色描述" prop="roleDesc">
           <el-input v-model="addRoleform.roleDesc" auto-complete="off"></el-input>
         </el-form-item>
       </el-form>
@@ -75,12 +75,24 @@
       <el-table-column prop="roleDesc" label="描述" width="350"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" type="primary" icon="el-icon-edit" @click="showGrantdDialog(scope.row)">
-          </el-button>
-          <el-button size="mini" type="primary" icon="el-icon-setting" @click="handleEdit(scope.$index, scope.row)">
-          </el-button>
-          <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(scope.$index, scope.row)">
-          </el-button>
+          <el-button
+            size="mini"
+            type="primary"
+            icon="el-icon-edit"
+            @click="handleEdit(scope.$index, scope.row)"
+          ></el-button>
+          <el-button
+            size="mini"
+            type="primary"
+            icon="el-icon-setting"
+            @click="showGrantdDialog(scope.row)"
+          ></el-button>
+          <el-button
+            size="mini"
+            type="danger"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.$index, scope.row)"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -90,21 +102,26 @@
         :data="rightsList"
         show-checkbox
         node-key="id"
-        ref='tree'
-        :default-expand-all = true
+        ref="tree"
+        :default-expand-all="true"
         :default-checked-keys="checkedArr"
         :props="defaultProps"
       ></el-tree>
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="grantRoleRightDialogVisible = false">取 消</el-button>
-        <el-button type="primary"  @click='grantRoleRight(roleId)'>确 定</el-button>
+        <el-button type="primary" @click="grantRoleRight(roleId)">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 <script>
-import { getAllRoles, delRoleRightbyId, addRole, grantRoleRightById } from '@/api/roles.js'
+import {
+  getAllRoles,
+  delRoleRightbyId,
+  addRole,
+  grantRoleRightById
+} from '@/api/roles.js'
 import { getAllrights } from '@/api/rights.js'
 export default {
   data () {
@@ -125,6 +142,14 @@ export default {
       defaultProps: {
         label: 'authName', // 节点展示的文本属性
         children: 'children' // 节点的下级数据
+      },
+      rules: {
+        roleName: [
+          { required: true, message: '请输入角色名称', trigger: 'blur' }
+        ],
+        roleDesc: [
+          { required: true, message: '请输入角色描述', trigger: 'blur' }
+        ]
       }
     }
   },
@@ -186,26 +211,34 @@ export default {
     },
     // 添加角色
     addRole () {
-      addRole(this.addRoleform)
-        .then(res => {
-          // console.log(res)
-          if (res.data.meta.status === 201) {
-            this.$message.success(res.data.meta.msg)
-            this.addRoleDialogFormVisible = false
-            // 需要刷新
-            this.init()
-          } else {
-            this.$message.error(res.data.meta.msg)
-          }
-        })
-        .catch(() => {
-          this.$message.error('添加角色失败')
-        })
+      this.$refs.addRoleform.validate(valid => {
+        if (valid) {
+          addRole(this.addRoleform)
+            .then(res => {
+              // console.log(res)
+              if (res.data.meta.status === 201) {
+                this.$message.success(res.data.meta.msg)
+                this.addRoleDialogFormVisible = false
+                // 需要刷新
+                this.init()
+                // 需清空表单
+                this.$refs.addRoleform.resetFields()
+              } else {
+                this.$message.error(res.data.meta.msg)
+              }
+            })
+            .catch(() => {
+              this.$message.error('添加角色失败')
+            })
+        } else {
+          return false
+        }
+      })
     },
     // 获取角色默认权限
     showGrantdDialog (row) {
       this.grantRoleRightDialogVisible = true
-      console.log(row)
+      // console.log(row)
       // 这里进行给角色id赋值,后期需要使用
       this.roleId = row.id
       this.rightsList = [...this.rightsList]
@@ -258,7 +291,10 @@ export default {
       // 这是另一种方法
       // console.log(this.$refs.tree.getHalfCheckedKeys())  //获取1，2层的权限id
       // console.log(this.$refs.tree.getCheckedKeys()) //获取第3层的权限id
-      let arr = [...this.$refs.tree.getHalfCheckedKeys(), ...this.$refs.tree.getCheckedKeys()]
+      let arr = [
+        ...this.$refs.tree.getHalfCheckedKeys(),
+        ...this.$refs.tree.getCheckedKeys()
+      ]
       let res = await grantRoleRightById(roleId, arr.join(','))
       // console.log(res)
       if (res.data.meta.status === 200) {

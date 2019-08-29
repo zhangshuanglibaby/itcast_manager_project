@@ -211,12 +211,12 @@ export default {
     init () {
       getAllUsers(this.usersObj)
         .then(res => {
-          console.log(res)
+          // console.log(res)
           if (res.data.meta.status === 200) {
             // console.log(res)
             this.usersList = res.data.data.users
             this.total = res.data.data.total
-          } else if (res.data.meta.status === 400) {
+          } else {
             this.$message.error(res.data.meta.msg)
           }
         })
