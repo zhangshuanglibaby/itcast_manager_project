@@ -38,7 +38,7 @@
         <el-header>
           <span class="myicon myicon-menu toggle-btn"></span>
           <p>电商后台管理系统</p>
-          <a href="javascript">退出</a>
+          <a href="javascript" @click="logOut">退出</a>
         </el-header>
         <el-main>
           <!-- 添加路由展示区域 -->
@@ -54,6 +54,14 @@ export default {
   data () {
     return {
       menusList: []
+    }
+  },
+  methods: {
+    logOut () {
+      // 登出去的时候把本地存储的token去除,重定向为登录页面
+      localStorage.removeItem('itcast_manger')
+      // this.$router.push({name:'login})
+      location.href = '/login'
     }
   },
   mounted () {
@@ -89,7 +97,7 @@ export default {
     background-color:rgb(106, 213, 230);
     border-bottom: 1px solid #eee;
     p {
-      font-size: 36px;
+      font-size: 30px;
       color: #fff
     }
     a {
