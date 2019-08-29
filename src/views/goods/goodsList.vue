@@ -13,8 +13,9 @@
         v-model="goodsObj.query"
         class="input-with-select"
         style="width:300px;margin-right:10px"
+        @input.native="init()"
       >
-        <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-button slot="append" icon="el-icon-search" @click="init"></el-button>
       </el-input>
       <el-button type="success" plain>添加商品</el-button>
     </div>
