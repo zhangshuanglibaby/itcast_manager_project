@@ -67,10 +67,12 @@
             <el-upload
               class="upload-demo"
               :headers='setToken()'
-              action="http://192.168.70.61:8888/api/private/v1/"
+              action="http://192.168.1.102:8888/api/private/v1/upload"
               :on-preview="handlePreview"
               :on-remove="handleRemove"
+              :on-success="handelSucess"
               :file-list="fileList"
+              :before-upload="beforeUpload"
               list-type="picture"
             >
               <el-button size="small" type="primary">点击上传</el-button>
@@ -81,7 +83,7 @@
         </el-tabs>
         <!-- 按钮 -->
         <el-form-item style="margin-top:30px;margin-left:500px">
-          <el-button type="primary">确认</el-button>
+          <el-button type="primary" @click="addGoods">确认</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -102,8 +104,8 @@ export default {
         goods_number: '',
         goods_weight: '',
         goods_introduce: '',
-        pics: '',
-        attrs: ''
+        pics: [],
+        attrs: []
       },
       cateList: [],
       cascaderProps: {
@@ -118,11 +120,20 @@ export default {
     }
   },
   methods: {
-    handleRemove (file, fileList) {
-      console.log(file, fileList)
+    handleRemove (file) {
+      if (!file.response) {
+        return
+      }
+      // console.log(file)
+      let temp = file.response.data.tmp_path
+      for (let i = 0; i < this.goodsForm.pics.length; i++) {
+        if (this.goodsForm.pics[i].pic === temp) {
+          this.goodsForm.pics.splice(i, 1)
+          break
+        }
+      }
     },
     handlePreview (file) {
-      console.log(file)
     },
     // 设置token
     setToken () {
@@ -130,7 +141,7 @@ export default {
       return { Authorization: mytoken }
     },
     beforeLeave (activeName, oldActiveName) {
-      console.log(activeName, oldActiveName)
+      // console.log(activeName, oldActiveName)
       console.log(this.goodsForm.goods_cat)
       if (activeName === '1' || activeName === '2') {
         // 再检测是否有选择商品分类
@@ -161,6 +172,24 @@ export default {
           this.staticAttr = res2.data.data
         }
       }
+    },
+    handelSucess (res) {
+      // console.log(res)
+      if (res.meta.status === 200) {
+        this.goodsForm.pics.push({ pic: res.data.tmp_path })
+      }
+    },
+    // 上传图片先检测图片格式是否规范
+    beforeUpload (file) {
+      console.log(file)
+      if (!file.type.startsWith('image/')) {
+        this.$message.warning('请选择满足要求格式的图片,如png, jpg, jpeg')
+        // 取消当前操作,会触发handleremove
+        return false
+      }
+    },
+    addGoods () {
+      console.log(this.goodsForm)
     }
   },
   mounted () {
