@@ -13,6 +13,7 @@ import roles from '@/views/rights/roles.vue'
 import rights from '@/views/rights/rights.vue'
 import goodsList from '@/views/goods/goodsList.vue'
 import addGood from '@/views/goods/addGood.vue'
+import reports from '@/views/reports/reports.vue'
 
 // 使用ues,让vue使用vue-router进行对路由的管理
 Vue.use(VueRouter)
@@ -67,6 +68,11 @@ export default new VueRouter({
           name: 'add',
           path: 'add',
           component: addGood
+        },
+        {
+          name: 'reports',
+          path: 'reports',
+          component: reports
         }
       ]
     }]

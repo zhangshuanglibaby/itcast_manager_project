@@ -79,7 +79,10 @@
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="商品内容" name="4">定时任务补偿</el-tab-pane>
+          <el-tab-pane label="商品内容" name="4">
+            <quill-editor v-model="goodsForm.goods_introduce">
+  </quill-editor>
+          </el-tab-pane>
         </el-tabs>
         <!-- 按钮 -->
         <el-form-item style="margin-top:30px;margin-left:500px">
@@ -91,8 +94,14 @@
 </template>
 <script>
 import { getAllCates } from '@/api/cate.js'
-// import { uploadFiles } from '@/api/upload.js'
 import { getAllParams } from '@/api/params.js'
+import { addGoods } from '@/api/goods.js'
+
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+import { quillEditor } from 'vue-quill-editor'
 export default {
   data () {
     return {
@@ -118,6 +127,9 @@ export default {
       staticAttr: []
 
     }
+  },
+  components: {
+    quillEditor
   },
   methods: {
     handleRemove (file) {
@@ -156,7 +168,7 @@ export default {
     async  handleClick () {
       if (this.activeName2 === '1') {
         let res = await getAllParams(this.goodsForm.goods_cat[2], 'many')
-        console.log(res)
+        // console.log(res)
         if (res.data.meta.status === 200) {
           this.attrValues = res.data.data
         }
@@ -167,7 +179,7 @@ export default {
         }
       } else if (this.activeName2 === '2') {
         let res2 = await getAllParams(this.goodsForm.goods_cat[2], 'only')
-        console.log(res2)
+        // console.log(res2)
         if (res2.data.meta.status === 200) {
           this.staticAttr = res2.data.data
         }
@@ -181,20 +193,31 @@ export default {
     },
     // 上传图片先检测图片格式是否规范
     beforeUpload (file) {
-      console.log(file)
+      // console.log(file)
       if (!file.type.startsWith('image/')) {
         this.$message.warning('请选择满足要求格式的图片,如png, jpg, jpeg')
         // 取消当前操作,会触发handleremove
         return false
       }
     },
-    addGoods () {
-      console.log(this.goodsForm)
+    async addGoods () {
+      this.goodsForm.goods_cat = this.goodsForm.goods_cat.join(',')
+      try {
+        let res = await addGoods(this.goodsForm)
+        // console.log(this.goodsForm)
+        // console.log(res)
+        if (res.data.meta.status === 201) {
+          this.$message.success(res.data.meta.msg)
+          this.$router.push({ name: 'goods' })
+        }
+      } catch (err) {
+        console.log(err)
+      }
     }
   },
   mounted () {
     getAllCates(3).then(res => {
-      console.log(res)
+      // console.log(res)
       if (res.data.meta.status === 200) {
         this.cateList = res.data.data
       }
