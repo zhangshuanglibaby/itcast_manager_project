@@ -84,8 +84,10 @@
           </el-tab-pane>
         </el-tabs>
         <!-- 按钮 -->
-        <el-form-item style="margin-top:30px;margin-left:500px">
-          <el-button type="primary" @click="addGoods">确认</el-button>
+        <el-form-item style="margin-top:20px;margin-left:500px">
+          <el-button @click="$router.push({name : 'goods'})">取 消</el-button>
+          <el-button type="primary" @click="addGoods" v-show="sure === 0">确认</el-button>
+          <el-button type="primary" v-show="sure === 1" @click="editGood">完成</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -94,7 +96,7 @@
 <script>
 import { getAllCates } from '@/api/cate.js'
 import { getAllParams } from '@/api/params.js'
-import { addGoods } from '@/api/goods.js'
+import { addGoods, getGoodInfoById, editGood } from '@/api/goods.js'
 
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -123,7 +125,8 @@ export default {
       },
       fileList: [],
       attrValues: [],
-      staticAttr: []
+      staticAttr: [],
+      sure: 0
 
     }
   },
@@ -222,6 +225,19 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    // 编辑提交商品
+    async editGood () {
+      this.goodsForm.goods_cat = this.goodsForm.goods_cat.join(',')
+      let res = await editGood(this.goodsForm.goods_id, this.goodsForm)
+      // console.log(this.goodsForm)
+      // console.log(res)
+      if (res.data.meta.status === 200) {
+        this.$message.success('编辑成功')
+        this.$router.push({ name: 'goods' })
+      } else {
+        this.$message.error('编辑失败')
+      }
     }
   },
   mounted () {
@@ -232,6 +248,30 @@ export default {
         this.cateList = res.data.data
       }
     })
+
+    // 判断路由是否有带参数,有则是编辑
+    // console.log(this.$route.params)
+    this.goodsForm.id = this.$route.params.id
+    if (this.goodsForm.id) {
+      getGoodInfoById(this.goodsForm.id)
+        .then(res => {
+          this.sure = 1
+          console.log(res)
+          if (res.data.meta.status === 200) {
+            // this.goodsForm.goods_id = res.data.data.goods_id
+            // this.goodsForm.goods_name = res.data.data.goods_name
+            // this.goodsForm.goods_price = res.data.data.goods_price
+            // this.goodsForm.goods_number = res.data.data.goods_number
+            // this.goodsForm.goods_weight = res.data.data.goods_weight
+            // this.goodsForm.goods_introduce = res.data.data.goods_introduce
+            this.goodsForm = res.data.data
+            this.goodsForm.goods_cat = this.goodsForm.goods_cat.split(',').map(e => { return e - 0 })
+          }
+        })
+        .catch(() => {
+          this.$message.error('服务器异常')
+        })
+    }
   }
 }
 </script>

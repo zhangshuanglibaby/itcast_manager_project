@@ -34,7 +34,7 @@
         <template slot-scope="scope">
           <el-button
             size="mini"
-            @click="handleEdit(scope.$index, scope.row)"
+            @click="$router.push({path:'add/' + scope.row.goods_id})"
             icon="el-icon-edit"
             type="primary"
             plain
@@ -77,9 +77,6 @@ export default {
     }
   },
   methods: {
-    handleEdit (index, row) {
-      console.log(index, row)
-    },
     handleSizeChange (val) {
       this.goodsObj.pagesize = val
       this.init()

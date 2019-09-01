@@ -24,3 +24,19 @@ export const delGood = (id) => {
     method: 'delete'
   })
 }
+
+// 根据id查询商品 --- 编辑商品的默认数据展示
+export const getGoodInfoById = (id) => {
+  return axios({
+    url: `goods/${id}`
+  })
+}
+
+// 编辑提交商品
+export const editGood = (id, data) => {
+  return axios({
+    url: `goods/${id}`,
+    method: 'put',
+    data
+  })
+}
