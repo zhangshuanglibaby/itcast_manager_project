@@ -16,3 +16,11 @@ export const addGoods = (data) => {
     data
   })
 }
+
+// 删除商品
+export const delGood = (id) => {
+  return axios({
+    url: `goods/${id}`,
+    method: 'delete'
+  })
+}

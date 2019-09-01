@@ -68,7 +68,6 @@
               class="upload-demo"
               :headers='setToken()'
               action="http://192.168.1.102:8888/api/private/v1/upload"
-              :on-preview="handlePreview"
               :on-remove="handleRemove"
               :on-success="handelSucess"
               :file-list="fileList"
@@ -132,29 +131,33 @@ export default {
     quillEditor
   },
   methods: {
+    // 移出图片
     handleRemove (file) {
       if (!file.response) {
         return
       }
       // console.log(file)
-      let temp = file.response.data.tmp_path
-      for (let i = 0; i < this.goodsForm.pics.length; i++) {
-        if (this.goodsForm.pics[i].pic === temp) {
-          this.goodsForm.pics.splice(i, 1)
-          break
-        }
-      }
-    },
-    handlePreview (file) {
+      // let temp = file.response.data.tmp_path
+      // for (let i = 0; i < this.goodsForm.pics.length; i++) {
+      //   if (this.goodsForm.pics[i].pic === temp) {
+      //     this.goodsForm.pics.splice(i, 1)
+      //     break
+      //   }
+      // }
+      let index = this.addForm.pics.findIndex(e => {
+        return e.pic === file.response.data.tmp_path
+      })
+      this.addForm.pics.splice(index, 1)
     },
     // 设置token
     setToken () {
       let mytoken = localStorage.getItem('itcast_manger')
       return { Authorization: mytoken }
     },
+    // 离开标签页时触发
     beforeLeave (activeName, oldActiveName) {
       // console.log(activeName, oldActiveName)
-      console.log(this.goodsForm.goods_cat)
+      // console.log(this.goodsForm.goods_cat)
       if (activeName === '1' || activeName === '2') {
         // 再检测是否有选择商品分类
         if (this.goodsForm.goods_cat.length !== 3) {
@@ -165,6 +168,7 @@ export default {
         }
       }
     },
+    // 点击标签页触发
     async  handleClick () {
       if (this.activeName2 === '1') {
         let res = await getAllParams(this.goodsForm.goods_cat[2], 'many')
@@ -175,7 +179,7 @@ export default {
         // 将attrValues的attr_vals把字符串转成数组
         for (let i = 0; i < this.attrValues.length; i++) {
           this.attrValues[i].attr_vals = this.attrValues[i].attr_vals.split(',')
-          console.log(this.attrValues[i].attr_vals)
+          // console.log(this.attrValues[i].attr_vals)
         }
       } else if (this.activeName2 === '2') {
         let res2 = await getAllParams(this.goodsForm.goods_cat[2], 'only')
@@ -185,10 +189,14 @@ export default {
         }
       }
     },
+    // 图片上传成功触发
     handelSucess (res) {
       // console.log(res)
       if (res.meta.status === 200) {
+        this.$message.success(res.meta.msg)
         this.goodsForm.pics.push({ pic: res.data.tmp_path })
+      } else {
+        this.$message.error(res.meta.msg)
       }
     },
     // 上传图片先检测图片格式是否规范
@@ -200,11 +208,12 @@ export default {
         return false
       }
     },
+    // 添加商品
     async addGoods () {
       this.goodsForm.goods_cat = this.goodsForm.goods_cat.join(',')
       try {
         let res = await addGoods(this.goodsForm)
-        // console.log(this.goodsForm)
+        console.log(this.goodsForm)
         // console.log(res)
         if (res.data.meta.status === 201) {
           this.$message.success(res.data.meta.msg)
@@ -216,6 +225,7 @@ export default {
     }
   },
   mounted () {
+    // 获取商品分类列表数据
     getAllCates(3).then(res => {
       // console.log(res)
       if (res.data.meta.status === 200) {

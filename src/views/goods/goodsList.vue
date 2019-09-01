@@ -22,7 +22,7 @@
     <!-- 表格明细 -->
     <el-table :data="goodsList" border style="width: 100%">
       <el-table-column type="index" label="编号" width="50"></el-table-column>
-      <el-table-column prop="goods_name" label="商品名称" width="450"></el-table-column>
+      <el-table-column prop="goods_name" label="商品名称" width="400"></el-table-column>
       <el-table-column prop="goods_price" label="商品价格" width="80"></el-table-column>
       <el-table-column prop="goods_weight" label="商品重量" width="80"></el-table-column>
       <el-table-column prop="add_time" label="创建时间" width="200">
@@ -43,7 +43,7 @@
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="delGood(scope.row)"
             icon="el-icon-delete"
           ></el-button>
         </template>
@@ -62,7 +62,7 @@
   </div>
 </template>
 <script>
-import { getAllGoods } from '@/api/goods.js'
+import { getAllGoods, delGood } from '@/api/goods.js'
 import { timeFormat } from '@/tools/userFilters.js'
 export default {
   data () {
@@ -78,9 +78,6 @@ export default {
   },
   methods: {
     handleEdit (index, row) {
-      console.log(index, row)
-    },
-    handleDelete (index, row) {
       console.log(index, row)
     },
     handleSizeChange (val) {
@@ -101,6 +98,26 @@ export default {
         } else {
           console.log(res.data.meta.msg)
         }
+      })
+    },
+    // 删除商品
+    delGood (row) {
+      // console.log(row)
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '删除提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        let res = await delGood(row.goods_id)
+        // console.log(res)
+        if (res.data.meta.status === 200) {
+          this.$message.success(res.data.meta.msg)
+          this.init()
+        } else {
+          this.$message.error(res.data.meta.msg)
+        }
+      }).catch(() => {
+        this.$message.info('已取消删除')
       })
     }
   },
