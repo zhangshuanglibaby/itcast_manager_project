@@ -67,7 +67,7 @@
             <el-upload
               class="upload-demo"
               :headers='setToken()'
-              action="http://192.168.1.102:8888/api/private/v1/upload"
+              action="http://192.168.70.26:8888/api/private/v1/upload"
               :on-remove="handleRemove"
               :on-success="handelSucess"
               :file-list="fileList"
@@ -243,7 +243,7 @@ export default {
   mounted () {
     // 获取商品分类列表数据
     getAllCates(3).then(res => {
-      // console.log(res)
+      console.log(res)
       if (res.data.meta.status === 200) {
         this.cateList = res.data.data
       }

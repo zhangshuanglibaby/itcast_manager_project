@@ -14,6 +14,8 @@ import rights from '@/views/rights/rights.vue'
 import goodsList from '@/views/goods/goodsList.vue'
 import addGood from '@/views/goods/addGood.vue'
 import reports from '@/views/reports/reports.vue'
+import params from '@/views/params/params.vue'
+import orders from '@/views/orders/orders.vue'
 
 // 使用ues,让vue使用vue-router进行对路由的管理
 Vue.use(VueRouter)
@@ -73,6 +75,15 @@ export default new VueRouter({
           name: 'reports',
           path: 'reports',
           component: reports
+        },
+        {
+          name: 'params',
+          path: 'params',
+          component: params
+        }, {
+          name: 'orders',
+          path: 'orders',
+          component: orders
         }
       ]
     }]
